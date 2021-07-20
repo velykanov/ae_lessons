@@ -1,25 +1,19 @@
-import datetime
-
-from django.test import Client, TestCase
+from django.test import TestCase
 
 # Create your tests here.
-from .models import Film, Language
+from .factories import FilmFactory, LanguageFactory
+from .models import Film
 
 
 class TestFilm(TestCase):
 
     def setUp(self) -> None:
-        self.language = Language.objects.create(name='test_en')
-        self.film = Film.objects.create(
-            title='Test film',
-            description='Test desc',
-            release_date=datetime.datetime.now().date(),
-            language_id=self.language.id,
-        )
+        self.language = LanguageFactory()
+        self.film = FilmFactory(language=self.language)
         self.client = self.client_class()
 
     def test_fetch(self):
-        film = Film.objects.get(title='Test film')
+        film = Film.objects.get(title=self.film.title)
         self.assertEqual(film.title, self.film.title)  # film.title == self.film.title
         self.assertEqual(film.id, self.film.id)
 
